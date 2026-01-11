@@ -1,0 +1,7 @@
+{
+  "name": "DoodleDream Animator",
+  "description": "Transform your hand-drawn sketches into high-quality 3D animations using Gemini and Veo AI. Capture a drawing, define its world, and watch it come to life.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
