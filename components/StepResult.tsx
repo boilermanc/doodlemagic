@@ -27,8 +27,8 @@ const StepResult: React.FC<StepResultProps> = ({ videoUrl, onReset, analysis, on
 
       {/* Floating Success Badge */}
       <div className="absolute top-12 left-1/2 -translate-x-1/2 z-20 text-center w-full px-6">
-        <div className="inline-block px-6 py-2 bg-yellow-400/20 backdrop-blur-xl text-yellow-300 rounded-full text-xs font-black uppercase tracking-[0.3em] mb-4 border border-yellow-400/30 shadow-[0_0_30px_rgba(250,204,21,0.2)] animate-pulse">
-          Cinematic Premiere ✨
+        <div className="inline-block px-6 py-2 bg-soft-gold/20 backdrop-blur-xl text-soft-gold rounded-full text-xs font-black uppercase tracking-[0.3em] mb-4 border border-soft-gold/30 shadow-[0_0_30px_rgba(212,165,116,0.3)] animate-pulse">
+          Your story is ready ✨
         </div>
         <h2 className="text-3xl md:text-5xl font-black text-white mb-2 drop-shadow-2xl">
           {analysis?.storyTitle || "Your Art in Motion"}
@@ -63,7 +63,7 @@ const StepResult: React.FC<StepResultProps> = ({ videoUrl, onReset, analysis, on
         <button 
           onClick={onOpenStory}
           disabled={isStoryLoading}
-          className={`w-full py-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-[2rem] font-black text-2xl hover:scale-110 active:scale-95 transition-all shadow-2xl shadow-purple-500/30 border-b-8 border-purple-800 flex items-center justify-center gap-4 group ${isStoryLoading ? 'opacity-70 grayscale cursor-wait' : ''}`}
+          className={`w-full py-6 bg-soft-gold text-white rounded-[2rem] font-black text-2xl hover:scale-110 active:scale-95 transition-all shadow-2xl shadow-soft-gold/30 border-b-8 border-soft-gold/70 flex items-center justify-center gap-4 group ${isStoryLoading ? 'opacity-70 grayscale cursor-wait' : ''}`}
         >
           {isStoryLoading ? (
             <>
@@ -81,7 +81,7 @@ const StepResult: React.FC<StepResultProps> = ({ videoUrl, onReset, analysis, on
         <div className="flex items-center gap-4">
           <button 
             onClick={onReset}
-            className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md rounded-2xl font-black text-sm uppercase tracking-widest transition-all border border-white/10 active:scale-90 flex items-center gap-2"
+            className="px-8 py-3 bg-silver/20 hover:bg-silver/40 text-white backdrop-blur-md rounded-2xl font-black text-sm uppercase tracking-widest transition-all border border-silver/30 active:scale-90 flex items-center gap-2"
           >
             <span>🔄</span> NEW DRAWING
           </button>
@@ -89,7 +89,7 @@ const StepResult: React.FC<StepResultProps> = ({ videoUrl, onReset, analysis, on
       </div>
 
       <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/20 text-[10px] font-black uppercase tracking-[0.4em]">
-        DoodleMagic Cinematic Studio
+        Once Upon a Drawing
       </p>
     </div>
   );

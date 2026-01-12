@@ -20,6 +20,10 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
   const [currentPage, setCurrentPage] = useState(0); 
   const [isTurning, setIsTurning] = useState(false);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
+  const [hasCompletedReading, setHasCompletedReading] = useState(false);
+  const [showUnlockCelebration, setShowUnlockCelebration] = useState(false);
+  const [highestPageReached, setHighestPageReached] = useState(0);
+  const [showKeyboardHint, setShowKeyboardHint] = useState(true);
 
   const playSound = useCallback((url: string, volume: number = 0.5) => {
     const audio = new Audio(url);
@@ -31,24 +35,54 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
     playSound(SFX.MAGIC_OPEN, 0.4);
   }, [playSound]);
 
+  useEffect(() => {
+    if (showUnlockCelebration) {
+      const timer = setTimeout(() => {
+        setShowUnlockCelebration(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showUnlockCelebration]);
+
+  // Auto-hide keyboard hint after a few seconds
+  useEffect(() => {
+    if (showKeyboardHint) {
+      const timer = setTimeout(() => {
+        setShowKeyboardHint(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showKeyboardHint]);
+
   const totalSpreads = analysis.pages.length + 2;
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentPage < totalSpreads - 1 && !isTurning) {
       playSound(SFX.PAGE_FLIP, 0.6);
       setDirection('next');
       setIsTurning(true);
+      const nextPage = currentPage + 1;
       if (currentPage === totalSpreads - 2) {
         setTimeout(() => playSound(SFX.CHEER, 0.4), 400);
+        // User reached final page by clicking next - unlock sharing
+        setTimeout(() => {
+          setHasCompletedReading(true);
+          setShowUnlockCelebration(true);
+        }, 600);
       }
       setTimeout(() => {
-        setCurrentPage(prev => prev + 1);
+        setCurrentPage(prev => {
+          const newPage = prev + 1;
+          // Update highest page reached if we've gone further
+          setHighestPageReached(currentHighest => Math.max(currentHighest, newPage));
+          return newPage;
+        });
         setIsTurning(false);
       }, 600);
     }
-  };
+  }, [currentPage, totalSpreads, isTurning, playSound]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (currentPage > 0 && !isTurning) {
       playSound(SFX.PAGE_FLIP, 0.6);
       setDirection('prev');
@@ -58,14 +92,55 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
         setIsTurning(false);
       }, 600);
     }
-  };
+  }, [currentPage, isTurning, playSound]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     playSound(SFX.BOOK_CLOSE, 0.7);
     setTimeout(onClose, 200);
-  };
+  }, [playSound, onClose]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle keys if we're in the middle of a page turn
+      if (isTurning) {
+        return;
+      }
+
+      // Hide keyboard hint on first key press
+      if (showKeyboardHint) {
+        setShowKeyboardHint(false);
+      }
+
+      switch (e.key) {
+        case 'ArrowRight':
+        case ' ': // Spacebar
+          e.preventDefault();
+          handleNext();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          handlePrev();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          handleClose();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isTurning, showKeyboardHint, handleNext, handlePrev, handleClose]);
 
   const handleIndicatorClick = (idx: number) => {
+    // Allow clicking if reading is completed OR if the page has been visited
+    const canClick = hasCompletedReading || idx <= highestPageReached;
+    if (!canClick) {
+      return; // Disable clicking pages that haven't been visited yet
+    }
     if (!isTurning && idx !== currentPage) {
       playSound(SFX.CLICK, 0.3);
       setCurrentPage(idx);
@@ -83,7 +158,7 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
 
   const handleSocialShare = (platform: 'x' | 'facebook') => {
     const url = encodeURIComponent(getShareUrl());
-    const text = encodeURIComponent(`Check out this magical story I made! It's called "${analysis.storyTitle}".`);
+    const text = encodeURIComponent(`Check out this beautiful story I made! It's called "${analysis.storyTitle}".`);
     
     const links = {
       x: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
@@ -112,7 +187,7 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
     
     try {
       await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-      alert("Magic link copied to clipboard! You can now paste it anywhere.");
+      alert("Story link copied to clipboard! You can now paste it anywhere.");
     } catch (e) {
       window.open(`mailto:?subject=${encodeURIComponent(shareData.title)}&body=${encodeURIComponent(shareData.text + " " + shareData.url)}`);
     }
@@ -131,28 +206,50 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
     <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center animate-in fade-in duration-700 overflow-hidden">
       {/* Immersive Background */}
       <div className="absolute inset-0 opacity-40 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950"></div>
-        <div className="absolute top-[20%] left-[10%] w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[20%] right-[10%] w-96 h-96 bg-pink-500/20 rounded-full blur-[120px] animate-pulse delay-1000"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gunmetal via-blue-slate to-gunmetal"></div>
+        <div className="absolute top-[20%] left-[10%] w-96 h-96 bg-pacific-cyan/20 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[20%] right-[10%] w-96 h-96 bg-soft-gold/20 rounded-full blur-[120px] animate-pulse delay-1000"></div>
       </div>
 
       {/* Top Toolbar */}
       <div className="absolute top-6 left-0 right-0 px-6 flex justify-between items-center z-[110]">
-        <div className="flex gap-3">
-          <button 
-            onClick={() => handleSocialShare('x')}
-            className="w-12 h-12 md:w-14 md:h-14 bg-black text-white rounded-full flex items-center justify-center text-xl transition-all backdrop-blur-xl border border-white/20 hover:scale-110 active:scale-90 shadow-2xl"
-            title="Share on X"
-          >
-            𝕏
-          </button>
-          <button 
-            onClick={() => handleSocialShare('facebook')}
-            className="w-12 h-12 md:w-14 md:h-14 bg-[#1877F2] text-white rounded-full flex items-center justify-center text-2xl transition-all backdrop-blur-xl border border-white/20 hover:scale-110 active:scale-90 shadow-2xl"
-            title="Share on Facebook"
-          >
-            f
-          </button>
+        <div className="flex gap-3 items-center relative">
+          {hasCompletedReading ? (
+            <>
+              <button 
+                onClick={() => handleSocialShare('x')}
+                className={`w-12 h-12 md:w-14 md:h-14 bg-black text-white rounded-full flex items-center justify-center text-xl transition-all backdrop-blur-xl border border-white/20 hover:scale-110 active:scale-90 shadow-2xl ${
+                  showUnlockCelebration ? 'animate-in zoom-in fade-in duration-500' : ''
+                }`}
+                title="Share on X"
+              >
+                𝕏
+              </button>
+              <button 
+                onClick={() => handleSocialShare('facebook')}
+                className={`w-12 h-12 md:w-14 md:h-14 bg-[#1877F2] text-white rounded-full flex items-center justify-center text-2xl transition-all backdrop-blur-xl border border-white/20 hover:scale-110 active:scale-90 shadow-2xl ${
+                  showUnlockCelebration ? 'animate-in zoom-in fade-in duration-500 delay-100' : ''
+                }`}
+                title="Share on Facebook"
+              >
+                f
+              </button>
+              {showUnlockCelebration && (
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-in fade-in slide-in-from-top-2 duration-500">
+                  <div className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-pink-500 text-white rounded-full text-sm md:text-base font-black shadow-2xl whitespace-nowrap flex items-center gap-2">
+                    <span>Sharing Unlocked!</span>
+                    <span className="animate-bounce">🎉</span>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="px-3 py-1.5 md:px-4 md:py-2 bg-white/10 backdrop-blur-md text-white/70 rounded-full text-xs md:text-sm font-medium shadow-lg border border-white/10 flex items-center gap-2 animate-[pulse_3s_ease-in-out_infinite]">
+              <span className="text-base">📤</span>
+              <span className="hidden sm:inline">Finish reading to share!</span>
+              <span className="sm:hidden">Share unlocks at the end</span>
+            </div>
+          )}
         </div>
 
         <button 
@@ -191,8 +288,8 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full bg-slate-100 text-slate-400 gap-4">
-                      <div className="w-12 h-12 border-4 border-pink-400 border-t-transparent animate-spin rounded-full"></div>
-                      <p className="font-black uppercase tracking-widest text-xs">Generating Magic...</p>
+                      <div className="w-12 h-12 border-4 border-soft-gold border-t-transparent animate-spin rounded-full"></div>
+                      <p className="font-black uppercase tracking-widest text-xs">Generating Story...</p>
                     </div>
                   )}
                 </div>
@@ -215,7 +312,7 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
                     <h1 className="text-3xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-tight tracking-tight">
                       {analysis.storyTitle}
                     </h1>
-                    <div className="h-1.5 w-20 md:w-24 bg-gradient-to-r from-orange-400 to-pink-500 mx-auto rounded-full"></div>
+                    <div className="h-1.5 w-20 md:w-24 bg-soft-gold mx-auto rounded-full"></div>
                     <div className="space-y-2 pt-4">
                       <p className="text-lg md:text-2xl text-slate-500 font-bold italic">
                         Starring the amazing <span className="text-slate-800 not-italic font-black border-b-4 border-yellow-300">{analysis.subject}</span>
@@ -239,18 +336,27 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
                   </div>
                 ) : currentPage === totalSpreads - 1 ? (
                   <div className="space-y-4 md:space-y-8">
-                    <div className="inline-block px-4 py-1.5 md:px-6 md:py-2 bg-yellow-400/20 text-yellow-700 rounded-full text-xs md:text-sm font-black uppercase tracking-[0.2em] mb-2">
+                    <div className="inline-block px-4 py-1.5 md:px-6 md:py-2 bg-soft-gold/20 text-soft-gold rounded-full text-xs md:text-sm font-black uppercase tracking-[0.2em] mb-2">
                       The End 🎬
                     </div>
                     <h2 className="text-2xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-tight">What a Masterpiece!</h2>
                     
                     <div className="grid grid-cols-1 gap-3 pt-4 max-w-xs mx-auto">
-                       <button 
-                         onClick={handleShare}
-                         className="flex items-center justify-center gap-3 w-full py-3 md:py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl font-black text-base md:text-lg shadow-xl shadow-blue-200 hover:scale-105 active:scale-95 transition-all"
-                       >
-                         <span>📤</span> SHARE MAGIC
-                       </button>
+                       {hasCompletedReading ? (
+                         <button 
+                           onClick={handleShare}
+                           className="flex items-center justify-center gap-3 w-full py-3 md:py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl font-black text-base md:text-lg shadow-xl shadow-blue-200 hover:scale-105 active:scale-95 transition-all"
+                         >
+                           <span>📤</span> SHARE STORY
+                         </button>
+                       ) : (
+                         <button 
+                           disabled
+                           className="flex items-center justify-center gap-3 w-full py-3 md:py-4 bg-gray-400 text-white rounded-2xl font-black text-base md:text-lg cursor-not-allowed opacity-50"
+                         >
+                           <span>📤</span> SHARE STORY
+                         </button>
+                       )}
 
                        <button 
                          onClick={handleSave}
@@ -327,23 +433,32 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
       {/* Progress Footer */}
       <div className="mt-8 flex flex-col items-center gap-4 z-20">
         <div className="flex items-center gap-2 md:gap-3">
-          {Array.from({ length: totalSpreads }).map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleIndicatorClick(idx)}
-              className={`h-1.5 transition-all rounded-full ${
-                currentPage === idx 
-                ? 'w-8 md:w-10 bg-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.8)]' 
-                : 'w-1.5 bg-white/20 hover:bg-white/40'
-              }`}
-            />
-          ))}
+          {Array.from({ length: totalSpreads }).map((_, idx) => {
+            const isCurrentPage = currentPage === idx;
+            const isAccessible = hasCompletedReading || idx <= highestPageReached;
+            const isVisited = idx <= highestPageReached;
+            
+            return (
+              <button
+                key={idx}
+                onClick={() => handleIndicatorClick(idx)}
+                disabled={!isAccessible}
+                className={`h-1.5 transition-all rounded-full ${
+                  isCurrentPage 
+                    ? 'w-8 md:w-10 bg-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.8)]' 
+                    : isAccessible
+                      ? 'w-1.5 bg-white/20 hover:bg-white/40 cursor-pointer'
+                      : 'w-1.5 bg-white/10 cursor-not-allowed opacity-30'
+                }`}
+              />
+            );
+          })}
         </div>
         
         <div className="flex items-center gap-3">
           <div className="w-40 h-1 bg-white/10 rounded-full overflow-hidden">
              <div 
-               className="h-full bg-pink-500 transition-all duration-500" 
+               className="h-full bg-soft-gold transition-all duration-500" 
                style={{ width: `${((currentPage) / (totalSpreads - 1)) * 100}%` }}
              ></div>
           </div>
@@ -352,6 +467,17 @@ const Storybook: React.FC<StorybookProps> = ({ analysis, videoUrl, onClose }) =>
           </p>
         </div>
       </div>
+
+      {/* Keyboard Hint */}
+      {showKeyboardHint && (
+        <div className="absolute bottom-6 right-6 z-[110] animate-in fade-in duration-500">
+          <div className="px-3 py-2 bg-black/60 backdrop-blur-md text-white/80 rounded-lg text-xs font-medium shadow-xl border border-white/10">
+            <span>← → to turn pages</span>
+            <span className="mx-2 text-white/40">•</span>
+            <span>ESC to close</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

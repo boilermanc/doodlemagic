@@ -1,14 +1,24 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 import { DrawingAnalysis, StoryPage } from "../types";
+import { getApiKey } from "./apiKeyService";
 
 // Helper to strip base64 prefix
 const getBase64Data = (base64: string) => {
   return base64.split(',')[1];
 };
 
+// Helper to get API key or throw error
+const getApiKeyOrThrow = (): string => {
+  const key = getApiKey();
+  if (!key) {
+    throw new Error("GEMINI_API_KEY not found. Please set it in your .env.local file.");
+  }
+  return key;
+};
+
 export const analyzeDrawing = async (base64Image: string): Promise<DrawingAnalysis> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: getApiKeyOrThrow() });
   const model = 'gemini-3-pro-preview';
   
   const response = await ai.models.generateContent({
@@ -67,7 +77,7 @@ export const generateStoryImage = async (
   characterDescription: string,
   pagePrompt: string
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: getApiKeyOrThrow() });
   const model = 'gemini-2.5-flash-image';
 
   const response = await ai.models.generateContent({
@@ -105,7 +115,7 @@ export const generateAnimation = async (
   analysis: DrawingAnalysis,
   onStatusUpdate?: (status: string) => void
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: getApiKeyOrThrow() });
   const model = 'veo-3.1-fast-generate-preview';
 
   const prompt = `A magical, high-quality 3D cinematic animation in the style of a modern animated movie. The character ${analysis.subject} (Visual features: ${analysis.characterAppearance}) comes to life and is ${analysis.suggestedAction} in a vibrant ${analysis.environment}. Professional 3D lighting, smooth motion.`;
@@ -136,7 +146,7 @@ export const generateAnimation = async (
   const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
   if (!downloadLink) throw new Error("The magic portal closed! Try again.");
 
-  const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
+  const response = await fetch(`${downloadLink}&key=${getApiKeyOrThrow()}`);
   const blob = await response.blob();
   return URL.createObjectURL(blob);
 };

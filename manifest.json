@@ -1,12 +1,12 @@
 
 {
-  "name": "DoodleDream Animator",
-  "short_name": "DoodleDream",
-  "description": "Animate your drawings into 3D worlds.",
+  "name": "Once Upon a Drawing",
+  "short_name": "Once Upon",
+  "description": "Turn childhood drawings into beautiful storybooks you can share.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#2563eb",
+  "background_color": "#fdfdff",
+  "theme_color": "#393d3f",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3659/3659898.png",

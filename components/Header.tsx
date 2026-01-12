@@ -7,23 +7,23 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onLogoClick }) => {
   return (
-    <header className="sticky top-0 z-50 glass-morphism border-b border-pink-100 px-6 py-4 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-off-white border-b border-silver px-6 py-4 flex items-center justify-between">
       <div 
         onClick={onLogoClick}
         className="flex items-center gap-2 cursor-pointer group"
       >
-        <div className="w-10 h-10 bg-gradient-to-tr from-yellow-400 via-orange-500 to-pink-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-orange-200 group-hover:rotate-12 transition-transform">
+        <div className="w-10 h-10 bg-pacific-cyan rounded-full flex items-center justify-center text-white shadow-lg shadow-pacific-cyan/30 group-hover:rotate-12 transition-transform">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
           </svg>
         </div>
         <h1 className="text-2xl font-black tracking-tight text-slate-800">
-          Doodle<span className="text-orange-500">Magic</span> ✨
+          Once Upon a <span className="text-amber-500">Drawing</span>
         </h1>
       </div>
       <div className="flex items-center gap-4">
-        <div className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-bold hidden sm:block">
-          For Kids & Dreamers
+        <div className="px-4 py-1.5 bg-gradient-to-r from-pacific-cyan to-blue-slate text-white rounded-full text-xs font-semibold hidden sm:block shadow-md shadow-pacific-cyan/20">
+          Every scribble has a story
         </div>
       </div>
     </header>

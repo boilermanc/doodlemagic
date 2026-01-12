@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       server: {
-        port: 3000,
+        port: 3001,
         host: '0.0.0.0',
       },
       plugins: [react()],
@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
       },
+      // Expose GEMINI_API_KEY as both VITE_ prefixed and direct for compatibility
+      envPrefix: ['VITE_', 'GEMINI_'],
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),

@@ -8,66 +8,21 @@ interface StepProcessingProps {
 }
 
 const ALL_MESSAGES = [
-  "Consulting the Wise Old Owl for plot twists... 🦉",
-  "Polishing the stars for extra twinkle... ⭐",
-  "Asking the moon to hold the spotlight... 🌙",
-  "Sprinkling extra-strength imagination dust... ✨",
-  "Teaching your character how to high-five... ✋",
-  "Baking a batch of fresh happy endings... 🧁",
-  "Checking if the dragons have brushed their teeth... 🐉",
-  "Borrowing a bucket of blue from the deep ocean... 🌊",
-  "Collecting giggles to fuel the magic engine... 🤭",
-  "Tying shoelaces on the running thoughts... 👟",
-  "Knitting a cozy sweater for the plot... 🧶",
-  "Chasing runaway adjectives across the page... 🏃‍♂️",
-  "Waiting for the wizard to finish his morning tea... 🍵",
-  "Inviting unicorns to the movie wrap party... 🦄",
-  "Polishing the invisible fountain pen... 🖋️",
-  "Whisking together a storm of stardust... 🌪️",
-  "Searching for the perfect 'Once Upon a Time'... 📜",
-  "Testing the gravity in a world of candy... 🍭",
-  "Asking the fireflies to light up the scene... 🏮",
-  "Checking if the pixels have had their breakfast... 🥣",
-  "Gathering starlight to illuminate the adventure... 🌟",
-  "Asking the mountain for its permission to move... ⛰️",
-  "Whispering secrets to the colors... 🤫",
-  "Catching moonbeams in a jar... 🫙",
-  "Polishing the edges of a dream... 😴",
-  "Teaching the clouds how to dance... ☁️",
-  "Synchronizing the heartbeats of your characters... ❤️",
-  "Drafting a map to a land of pure wonder... 🗺️",
-  "Asking the trees to wave hello... 🌳",
-  "Brewing a pot of inspiration tea... 🫖",
-  "Inflating the bouncy castles of the imagination... 🏰",
-  "Tuning the crickets' nightly orchestra... 🦗",
-  "Counting the stripes on a daydream... 🦓",
-  "Befriending a pocket-sized dragon... 🐲",
-  "Collecting bubbles from a fountain of joy... 🫧",
-  "Tidying up the corner of the universe... 🧹",
-  "Asking the wind to carry the story home... 🌬️",
-  "Consulting the library of unwritten books... 📚",
-  "Waking up the sleeping adjectives... 💤",
-  "Gathering golden threads for the plot... 🧵",
-  "Polishing the echoes in the canyon... 📢",
-  "Teaching the ocean how to whisper... 🐚",
-  "Painting shadows with extra light... 💡",
-  "Baking a pie filled with happy thoughts... 🥧",
-  "Borrowing a pinch of purple from a twilight sky... 🌆",
-  "Teaching the pebbles to sing in harmony... 🪨",
-  "Checking the compass for the direction of 'Happily Ever After'... 🧭",
-  "Asking the ladybugs to paint the dots on the story... 🐞",
-  "Watering the garden of growing ideas... 🪴",
-  "Stretching the rainbows to reach the next chapter... 🌈",
-  "Polishing the glass slippers (just in case)... 👠",
-  "Inviting the North Wind to blow some drama into the scene... 🌬️",
-  "Helping the protagonist find their favorite socks... 🧦",
-  "Asking the clock to slow down for the best parts... ⏰",
-  "Checking if the giant is taking his afternoon nap... 💤",
-  "Mixing a palette of colors that don't exist yet... 🎨",
-  "Teaching the fountain to sprout liquid diamonds... 💎",
-  "Asking the stars to align for a perfect scene... ✨",
-  "Catching a falling leaf for a tiny character's boat... 🍃",
-  "Whispering encouragement to the main character... 🗣️"
+  "Reading the lines and colors...",
+  "Finding the story hidden in the crayon...",
+  "Turning memories into once upon a time...",
+  "Imagining where this adventure might go...",
+  "Discovering the magic in every stroke...",
+  "Bringing their imagination back to life...",
+  "Weaving a tale from paper and dreams...",
+  "Dusting off the years with care...",
+  "Honoring every scribble and line...",
+  "Painting a new chapter from the old...",
+  "Letting the colors tell their story...",
+  "Remembering when this was brand new...",
+  "Turning crayon strokes into characters...",
+  "Building a world from their imagination...",
+  "Finding the heart of the drawing...",
 ];
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -104,7 +59,7 @@ const StepProcessing: React.FC<StepProcessingProps> = ({ text, originalImage, is
     <div className="flex flex-col items-center py-12 animate-in fade-in duration-300">
       <div className="relative mb-12">
         {/* Magic Spinner */}
-        <div className="w-48 h-48 border-[10px] border-slate-100 border-t-pink-500 border-r-orange-400 border-b-yellow-400 border-l-blue-400 rounded-full animate-spin"></div>
+        <div className="w-48 h-48 border-[10px] border-slate-100 border-t-soft-gold border-r-pacific-cyan border-b-silver border-l-blue-slate rounded-full animate-spin"></div>
         <div className="absolute inset-4 overflow-hidden rounded-full flex items-center justify-center bg-white border-4 border-slate-50 shadow-inner">
           <img 
             src={originalImage || ''} 
@@ -119,20 +74,20 @@ const StepProcessing: React.FC<StepProcessingProps> = ({ text, originalImage, is
         {/* Floating Emotive Elements */}
         {isAnimating && (
            <>
-            <div className="absolute -top-4 -left-4 text-4xl animate-bounce">✨</div>
-            <div className="absolute -bottom-4 -right-4 text-4xl animate-bounce animation-delay-2000">🎨</div>
+            <div className="absolute -top-4 -left-4 text-4xl animate-bounce">📜</div>
+            <div className="absolute -bottom-4 -right-4 text-4xl animate-bounce animation-delay-2000">✨</div>
            </>
         )}
       </div>
 
       <h3 className="text-2xl md:text-3xl font-black text-slate-800 mb-4 text-center px-4 min-h-[4rem] flex items-center justify-center">
-        {isAnimating ? shuffledPool[currentIndex] : "Reading your magic art... 🪄"}
+        {isAnimating ? shuffledPool[currentIndex] : "Discovering the story in your drawing... 📖"}
       </h3>
       
-      <p className="text-slate-500 font-bold text-center max-w-sm px-6">
+      <p className="text-blue-slate font-bold text-center max-w-sm px-6">
         {isAnimating 
-          ? "Our magic computer is painting every frame of your 3D movie. Each story is one-of-a-kind!" 
-          : "We're looking at your lines and colors to see the magic hidden inside."}
+          ? "We're creating every page of your storybook. Each story is one-of-a-kind!" 
+          : "We're looking at your drawing to discover the story waiting inside."}
       </p>
 
       {isAnimating && (

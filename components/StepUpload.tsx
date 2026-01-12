@@ -19,16 +19,16 @@ const StepUpload: React.FC<StepUploadProps> = ({ onImageSelected }) => {
 
   return (
     <div className="py-8 animate-in fade-in zoom-in duration-500">
-      <h2 className="text-3xl font-black text-slate-800 mb-2 text-center">Open the Magic Box! 🎁</h2>
-      <p className="text-slate-500 text-center mb-8 font-medium">Click below to show us your art!</p>
+      <h2 className="text-3xl font-black text-slate-800 mb-2 text-center">Let's bring it back to life</h2>
+      <p className="text-slate-500 text-center mb-8 font-medium">Upload a photo of the drawing — even if it's faded or crinkled, we'll work with it.</p>
       
       <div className="max-w-lg mx-auto">
-        <label className="group relative flex flex-col items-center justify-center w-full h-80 border-8 border-dashed border-blue-100 rounded-[3rem] cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-all bg-white overflow-hidden shadow-2xl">
+        <label className="group relative flex flex-col items-center justify-center w-full h-80 border-8 border-dashed border-silver rounded-[3rem] cursor-pointer hover:border-soft-gold hover:bg-soft-gold/10 transition-all bg-white overflow-hidden shadow-2xl">
           <div className="flex flex-col items-center justify-center p-8">
             <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-125 group-hover:rotate-12 transition-transform shadow-inner">
                <span className="text-5xl">📷</span>
             </div>
-            <p className="mb-2 text-xl text-slate-800 font-black uppercase tracking-wider">TAP HERE</p>
+            <p className="mb-2 text-xl text-gunmetal font-black uppercase tracking-wider">TAP HERE</p>
             <p className="text-sm text-slate-500 text-center font-bold">TO SNAP OR PICK ART</p>
           </div>
           <input 
@@ -44,9 +44,9 @@ const StepUpload: React.FC<StepUploadProps> = ({ onImageSelected }) => {
           <div className="flex items-start gap-4">
             <div className="text-3xl">✨</div>
             <div>
-              <p className="text-sm font-black text-orange-800 mb-1">Artist Tip:</p>
-              <p className="text-xs text-orange-700 leading-relaxed font-bold">
-                Draw on plain white paper with dark markers for the most magical 3D movies!
+              <p className="text-sm font-black text-gunmetal mb-1">Artist Tip:</p>
+              <p className="text-xs text-blue-slate leading-relaxed font-bold">
+                Draw on plain white paper with dark markers for the best results!
               </p>
             </div>
           </div>
